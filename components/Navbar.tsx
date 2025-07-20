@@ -10,10 +10,7 @@ interface MenuItem {
   label: string;
 }
 
-interface ProfileData {
-  github: string;
-  linkedin: string;
-}
+
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
