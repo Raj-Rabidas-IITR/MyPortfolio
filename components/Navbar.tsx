@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Menu, X, Github, Linkedin } from 'lucide-react';
+import { Menu, X, } from 'lucide-react';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
+
 
 interface MenuItem {
   id: string;
@@ -26,6 +28,7 @@ const Navbar: React.FC = () => {
     { id: 'skills', label: 'Skills' },
     { id: 'work', label: 'Projects' },
     { id: 'education', label: 'Education' },
+    { id: 'experience', label: 'Experience' },
     { id: 'contact', label: 'Contact' },
   ];
 
@@ -111,7 +114,7 @@ const Navbar: React.FC = () => {
                   className="text-gray-300 hover:text-cyan-400"
                   aria-label="GitHub"
                 >
-                  <Github size={24} />
+                  <FaGithub size={24} />
                 </a>
               )}
               {profile.linkedin && (
@@ -122,7 +125,7 @@ const Navbar: React.FC = () => {
                   className="text-gray-300 hover:text-cyan-400"
                   aria-label="LinkedIn"
                 >
-                  <Linkedin size={24} />
+                  <FaLinkedin size={24} />
                 </a>
               )}
             </>
