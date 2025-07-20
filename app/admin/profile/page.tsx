@@ -1,0 +1,118 @@
+'use client';
+import { useEffect, useState } from 'react';
+
+
+export default function ProfileAdmin() {
+  const [profile, setProfile] = useState({
+    name: '',
+    bio: '',
+    profilePic: '',
+    resumeUrl: '',
+    github: '',
+    linkedin: '',
+  });
+
+  useEffect(() => {
+    fetch('/api/profile')
+      .then(res => res.json())
+      .then(data => data && setProfile(data));
+  }, []);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    await fetch('/api/profile', {
+      method: 'POST',
+      body: JSON.stringify(profile),
+    });
+    alert("Profile updated!");
+  };
+
+  const handleFileUpload = async (e: any, type: 'profile' | 'resume') => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", type); // 'profile' or 'resume'
+
+    const res = await fetch('/api/upload', {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (data.url) {
+      if (type === "profile") {
+        setProfile({ ...profile, profilePic: data.url });
+      } else {
+        setProfile({ ...profile, resumeUrl: data.url });
+      }
+    }
+  };
+
+  return (
+    <div className="w-full max-w-4xl mx-auto">
+      <h1 className="text-2xl font-bold text-cyan-500 mb-4">Edit Profile Info</h1>
+
+      {/* Profile Picture Upload Preview */}
+      {profile.profilePic && (
+        <img
+          src={profile.profilePic}
+          alt="Profile Preview"
+          className="w-24 h-24 rounded-full object-cover border mb-2"
+        />
+      )}
+      <label className="block text-white font-medium">Upload Profile Image</label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => handleFileUpload(e, 'profile')}
+        className="mb-4 text-white"
+      />
+
+      {/* Resume Upload & Preview */}
+      {profile.resumeUrl && (
+        <p className="text-sm text-blue-400 mb-2">
+          Current Resume: <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">View</a>
+        </p>
+      )}
+      <label className="block text-white font-medium">Upload Resume (PDF)</label>
+      <input
+        type="file"
+        accept="application/pdf"
+        onChange={(e) => handleFileUpload(e, 'resume')}
+        className="mb-4 text-white"
+      />
+
+      {/* Profile Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          className="w-full p-2 rounded bg-gray-800 text-white"
+          placeholder="Name"
+          value={profile.name}
+          onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+        />
+        <textarea
+          className="w-full p-2 rounded bg-gray-800 text-white"
+          placeholder="Short Bio"
+          rows={4}
+          value={profile.bio}
+          onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+        />
+        <input
+          className="w-full p-2 rounded bg-gray-800 text-white"
+          placeholder="GitHub URL"
+          value={profile.github}
+          onChange={(e) => setProfile({ ...profile, github: e.target.value })}
+        />
+        <input
+          className="w-full p-2 rounded bg-gray-800 text-white"
+          placeholder="LinkedIn URL"
+          value={profile.linkedin}
+          onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
+        />
+        <button type="submit" className="bg-cyan-500 px-4 py-2 text-white rounded">Save Profile</button>
+      </form>
+    </div>
+  );
+}
