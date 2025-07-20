@@ -1,10 +1,20 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Pencil, Trash2 } from "lucide-react";
+import Image from 'next/image';
+// ✅ Type for experience
+interface Experience {
+  _id: string;
+  role: string;
+  company: string;
+  logo?: string;
+  startDate: string;
+  endDate?: string;
+}
 
-import { Pencil, Trash2 } from "lucide-react"; // Add this at the top
 export default function ExperienceList() {
-  const [experiences, setExperiences] = useState([]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
 
   useEffect(() => {
     fetch('/api/experience')
@@ -15,7 +25,7 @@ export default function ExperienceList() {
   const deleteExp = async (id: string) => {
     if (!confirm("Delete this experience?")) return;
     await fetch(`/api/experience/${id}`, { method: "DELETE" });
-    setExperiences(experiences.filter((exp: any) => exp._id !== id));
+    setExperiences(experiences.filter((exp) => exp._id !== id));
   };
 
   return (
@@ -31,19 +41,24 @@ export default function ExperienceList() {
       </div>
 
       <ul className="space-y-3">
-        {experiences.map((exp: any) => (
+        {experiences.map((exp) => (
           <li
             key={exp._id}
             className="p-4 border border-gray-700 rounded flex justify-between items-center bg-gray-800"
           >
             <div className="flex items-center gap-4">
-              {exp.logo && (
-                <img
-                  src={exp.logo}
-                  alt={`${exp.company} logo`}
-                  className="w-12 h-12 object-contain rounded border border-gray-500 bg-white"
-                />
-              )}
+            {exp.logo && (
+  <div className="relative w-12 h-12 rounded border border-gray-500 bg-white overflow-hidden">
+    <Image
+      src={exp.logo}
+      alt={`${exp.company} logo`}
+      fill
+      className="object-contain"
+      sizes="48px"
+    />
+  </div>
+)}
+
               <div>
                 <p className="text-white font-medium">
                   {exp.role} <span className="text-gray-400">@ {exp.company}</span>
@@ -55,20 +70,20 @@ export default function ExperienceList() {
             </div>
 
             <div className="flex gap-3">
-               <Link
-    href={`/admin/experience/${exp._id}/edit`}
-    className="flex items-center gap-1 text-blue-400 hover:text-blue-300"
-  >
-    <Pencil size={16} />
-    Edit
-  </Link>
-  <button
-    onClick={() => deleteExp(exp._id)}
-    className="flex items-center gap-1 text-red-400 hover:text-red-300"
-  >
-    <Trash2 size={16} />
-    Delete
-  </button>
+              <Link
+                href={`/admin/experience/${exp._id}/edit`}
+                className="flex items-center gap-1 text-blue-400 hover:text-blue-300"
+              >
+                <Pencil size={16} />
+                Edit
+              </Link>
+              <button
+                onClick={() => deleteExp(exp._id)}
+                className="flex items-center gap-1 text-red-400 hover:text-red-300"
+              >
+                <Trash2 size={16} />
+                Delete
+              </button>
             </div>
           </li>
         ))}

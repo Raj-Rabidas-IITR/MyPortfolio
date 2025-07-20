@@ -1,9 +1,19 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
+type ProfileType = {
+  name: string;
+  bio: string;
+  profilePic: string;
+  resumeUrl: string;
+  github: string;
+  linkedin: string;
+};
+
+type UploadType = 'profile' | 'resume';
 
 export default function ProfileAdmin() {
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState<ProfileType>({
     name: '',
     bio: '',
     profilePic: '',
@@ -14,39 +24,46 @@ export default function ProfileAdmin() {
 
   useEffect(() => {
     fetch('/api/profile')
-      .then(res => res.json())
-      .then(data => data && setProfile(data));
+      .then((res) => res.json())
+      .then((data: ProfileType) => {
+        if (data) setProfile(data);
+      });
   }, []);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await fetch('/api/profile', {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(profile),
     });
-    alert("Profile updated!");
+    alert('Profile updated!');
   };
 
-  const handleFileUpload = async (e: any, type: 'profile' | 'resume') => {
-    const file = e.target.files[0];
+  const handleFileUpload = async (
+    e: ChangeEvent<HTMLInputElement>,
+    type: UploadType
+  ) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("name", type); // 'profile' or 'resume'
+    formData.append('file', file);
+    formData.append('name', type);
 
     const res = await fetch('/api/upload', {
-      method: "POST",
+      method: 'POST',
       body: formData,
     });
 
     const data = await res.json();
     if (data.url) {
-      if (type === "profile") {
-        setProfile({ ...profile, profilePic: data.url });
-      } else {
-        setProfile({ ...profile, resumeUrl: data.url });
-      }
+      setProfile((prev) => ({
+        ...prev,
+        [type === 'profile' ? 'profilePic' : 'resumeUrl']: data.url,
+      }));
     }
   };
 
@@ -73,7 +90,10 @@ export default function ProfileAdmin() {
       {/* Resume Upload & Preview */}
       {profile.resumeUrl && (
         <p className="text-sm text-blue-400 mb-2">
-          Current Resume: <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">View</a>
+          Current Resume:{' '}
+          <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">
+            View
+          </a>
         </p>
       )}
       <label className="block text-white font-medium">Upload Resume (PDF)</label>
@@ -111,7 +131,9 @@ export default function ProfileAdmin() {
           value={profile.linkedin}
           onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
         />
-        <button type="submit" className="bg-cyan-500 px-4 py-2 text-white rounded">Save Profile</button>
+        <button type="submit" className="bg-cyan-500 px-4 py-2 text-white rounded">
+          Save Profile
+        </button>
       </form>
     </div>
   );

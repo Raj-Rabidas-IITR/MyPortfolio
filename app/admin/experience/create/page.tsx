@@ -1,6 +1,7 @@
 'use client';
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 type ExperienceType = {
   role: string;
@@ -69,13 +70,17 @@ export default function CreateExperience() {
     <div className="max-w-xl mx-auto p-6">
       <h1 className="text-xl font-bold text-cyan-500 mb-4">Add Experience</h1>
 
-      {exp.logo && (
-        <img
-          src={exp.logo}
-          alt="Logo Preview"
-          className="w-20 h-20 object-contain border mb-4 rounded"
-        />
-      )}
+{exp.logo && (
+  <div className="relative w-20 h-20 mb-4">
+    <Image
+      src={exp.logo}
+      alt="Logo Preview"
+      fill
+      className="object-contain border rounded bg-white"
+      sizes="80px"
+    />
+  </div>
+)}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
