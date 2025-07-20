@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       description: body.description,
       github: body.github,
       liveDemo: body.liveDemo,
-      imageUrl: body.imageUrl, // should be a full URL or path from upload
+      image: body.image, // should be a full URL or path from upload
       tags,
     });
 

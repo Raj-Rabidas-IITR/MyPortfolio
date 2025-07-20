@@ -1,73 +1,107 @@
 'use client';
+
 import { useEffect, useState } from 'react';
-import type { Project } from "@/types";
+import { Github, ExternalLink } from 'lucide-react'; // Add this at the top
+type Project= {
+  
+  _id: string;
+  title: string;
+  description: string;
+  imageUrl?: string;
+  github?: string;
+  liveDemo?: string;
+  tags?: string[];
+};
 
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/projects')
-      .then(res => res.json())
-      .then((data: Project[]) => setProjects(data));
+      .then((res) => res.json())
+      .then((data) => {
+        setProjects(data);
+        setLoading(false);
+      });
   }, []);
 
-  return (
-    <section className="py-12">
-      <h2 className="text-3xl font-bold text-cyan-400 mb-8 text-center">Projects</h2>
+  console.log("Projects data:", projects);
 
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
-        {projects.map((p) => (
+  if (loading) {
+    return (
+      <div className="min-h-[300px] flex justify-center items-center text-cyan-400 text-xl">
+        Loading Projects...
+      </div>
+    );
+  }
+
+  return (
+    <section
+      id="work"
+      className="py-20 px-[7vw] lg:px-[16vw] font-sans relative "
+    >
+      {/* Section Header */}
+      <div className="text-center mb-16">
+        <h2 className="text-4xl font-bold text-white">PROJECTS</h2>
+        <div className="w-40 h-1 bg-cyan-500 mx-auto mt-4"></div>
+        <p className="text-gray-400 mt-4 text-lg font-medium">
+          A showcase of my work in web development, design, and beyond.
+        </p>
+      </div>
+
+      {/* Project Cards Grid */}
+      <div className="grid gap-12 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project) => (
           <div
-            key={p._id}
-            className="bg-gray-900 border border-cyan-700 rounded-lg overflow-hidden shadow-lg hover:shadow-cyan-600/50 transition-shadow"
+            key={project._id}
+            className="border border-white bg-gray-900 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden cursor-pointer hover:shadow-cyan-400/60 hover:-translate-y-2 transition-transform duration-300"
           >
-            {p.imageUrl && (
+            {project.image && (
               <img
-                src={p.imageUrl}
-                alt={p.title}
-                className="w-full h-48 object-cover"
+                src={project.image}
+                alt={project.title}
+                className="w-full h-48 object-cover rounded-t-2xl"
               />
             )}
+            <div className="p-6">
+              <h3 className="text-2xl font-bold text-white mb-2">{project.title}</h3>
+              <p className="text-gray-400 line-clamp-3 text-sm mb-4">{project.description}</p>
 
-            <div className="p-4">
-              <h3 className="text-xl font-semibold text-white mb-2">{p.title}</h3>
-              <p className="text-gray-400 text-sm mb-3">{p.description}</p>
-
-              {p.tags && p.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {p.tags.map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="bg-cyan-600 text-white text-xs px-2 py-1 rounded"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex gap-4 text-sm mt-2">
-                {p.github && (
-                  <a
-                    href={p.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-400 hover:underline"
+              <div className="flex flex-wrap gap-2 mb-4">
+                {project.tags?.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="bg-[#112b3e] text-xs font-semibold text-cyan-400 rounded-full px-2 py-1"
                   >
-                    GitHub
-                  </a>
-                )}
-                {p.liveDemo && (
-                  <a
-                    href={p.liveDemo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-green-400 hover:underline"
-                  >
-                    Live Demo
-                  </a>
-                )}
+                    {tag}
+                  </span>
+                ))}
               </div>
+
+             <div className="flex gap-4 mt-4">
+  {project.github && (
+    <a
+      href={project.github}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 text-sm px-3 py-1.5 bg-[#0d1117] text-white border border-gray-600 rounded-lg hover:bg-gray-900 transition"
+    >
+      <Github size={18} />
+      <span>GitHub</span>
+    </a>
+  )}
+   {project.liveDemo && (
+    <a
+      href={project.liveDemo}
+      target="_blank"
+      rel="noopener noreferrer"
+       className="flex items-center gap-2 text-sm px-3 py-1.5 bg-[#0d1117] text-white border border-gray-600 rounded-lg hover:bg-gray-900 transition">
+      <ExternalLink size={18} />
+      <span>Preview</span>
+    </a>
+  )}
+</div>
             </div>
           </div>
         ))}

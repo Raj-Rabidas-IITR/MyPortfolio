@@ -7,6 +7,8 @@ import Education from "@/components/Education";
 import Experience from "@/components/Experience";
 import BlurBlob from "@/components/BlurBlob";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import Contact from "@/components/Contact";
 
 export default function Home() {
   return (
@@ -25,10 +27,12 @@ export default function Home() {
         <main className="min-h-screen bg-transparent text-white px-4 md:px-12">
           <Navbar/>
           <Hero />
-          <Projects />
           <Skills />
+          <Projects />
           <Education />
           <Experience />
+          <Contact />
+          <Footer/>
         </main>
       </div>
     </div>
