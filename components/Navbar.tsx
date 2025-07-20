@@ -98,36 +98,37 @@ const Navbar: React.FC = () => {
         </ul>
 
         {/* Social Icons */}
-        <div className="hidden md:flex space-x-5">
-          {loading && <span className="text-gray-400">Loading...</span>}
-          {error && <span className="text-red-500">{error}</span>}
-          {!loading && !error && profile && (
-            <>
-              {profile.github && (
-                <a
-                  href={profile.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-cyan-400"
-                  aria-label="GitHub"
-                >
-                  <FaGithub size={24} />
-                </a>
-              )}
-              {profile.linkedin && (
-                <a
-                  href={profile.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-cyan-400"
-                  aria-label="LinkedIn"
-                >
-                  <FaLinkedin size={24} />
-                </a>
-              )}
-            </>
-          )}
-        </div>
+       <div className="flex space-x-4">
+  {loading && <span className="text-gray-400">Loading...</span>}
+  {error && <span className="text-red-500">{error}</span>}
+  {!loading && !error && profile && (
+    <>
+      {profile.github && (
+        <a
+          href={profile.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-300 hover:text-white"
+          aria-label="GitHub"
+        >
+          <FaGithub size={24} />
+        </a>
+      )}
+      {profile.linkedin && (
+        <a
+          href={profile.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-300 hover:text-white"
+          aria-label="LinkedIn"
+        >
+          <FaLinkedin size={24} />
+        </a>
+      )}
+    </>
+  )}
+</div>
+
 
         {/* Mobile Menu Icon */}
         <div className="md:hidden">
