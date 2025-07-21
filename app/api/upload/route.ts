@@ -1,56 +1,25 @@
 import { NextResponse } from "next/server";
-import { mkdir, writeFile } from "fs/promises";
-import { join } from "path";
-import formidable from "formidable";
-import { IncomingForm } from "formidable";
+import { v2 as cloudinary, UploadApiResponse, UploadApiErrorResponse } from "cloudinary";
 import { Readable } from "stream";
 
-// Disable Next.js default body parsing
+// Cloudinary config (replace with env vars)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
+});
+
+// Disable body parsing
 export const config = {
   api: {
     bodyParser: false,
   },
 };
 
-// Custom parser function
-async function parseForm(req: Request): Promise<{ fields: any; files: any }> {
-  const form = new IncomingForm({
-    keepExtensions: true,
-    maxFileSize: 5 * 1024 * 1024, // 5MB
-    uploadDir: "/tmp",
-  });
-
-  return new Promise((resolve, reject) => {
-    form.parse(req as any, (err, fields, files) => {
-      if (err) reject(err);
-      else resolve({ fields, files });
-    });
-  });
-}
-
-// Convert Request -> Readable for formidable
-async function toReadableStream(req: Request): Promise<Readable> {
-  const reader = req.body?.getReader();
-  const stream = new Readable({ read() {} });
-
-  async function pump() {
-    const { done, value } = await reader!.read();
-    if (done) return stream.push(null);
-    stream.push(value);
-    await pump();
-  }
-
-  pump();
-  return stream;
-}
-
 export async function POST(req: Request) {
-  const uploadDir = join(process.cwd(), "/public/uploads");
-  await mkdir(uploadDir, { recursive: true });
-
   const formData = await req.formData();
   const file = formData.get("file") as File;
-  const name = formData.get("name") as string; // like "profile" or "resume"
+  const name = formData.get("name") as string; // e.g., "profile" or "resume"
 
   if (!file || !name) {
     return NextResponse.json({ error: "Missing file or name" }, { status: 400 });
@@ -58,11 +27,44 @@ export async function POST(req: Request) {
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
+  const stream = Readable.from(buffer);
 
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${name}.${fileExt}`;
-  const filePath = join(uploadDir, fileName);
+  const uploadPromise = (): Promise<UploadApiResponse> =>
+    new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "uploads",
+          public_id: name,
+          overwrite: true,
+          resource_type: "auto",
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else if (result) resolve(result);
+          else reject(new Error("Unknown Cloudinary error"));
+        }
+      );
 
-  await writeFile(filePath, buffer);
-  return NextResponse.json({ success: true, url: `/uploads/${fileName}` });
+      stream.pipe(uploadStream);
+    });
+
+  try {
+    const result = await uploadPromise();
+
+    return NextResponse.json({
+      success: true,
+      url: result.secure_url,
+      public_id: result.public_id,
+    });
+  } catch (err) {
+    const error = err as UploadApiErrorResponse | Error;
+
+    return NextResponse.json(
+      {
+        error: "Cloudinary upload failed",
+        details: "message" in error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
+  }
 }

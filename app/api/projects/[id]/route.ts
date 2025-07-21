@@ -18,7 +18,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     return NextResponse.json({ error: "Failed to fetch project" }, { status: 500 });
   }
 }
-
 // PUT /api/projects/:id
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   await connectDB();
@@ -41,7 +40,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         description: body.description,
         github: body.github,
         liveDemo: body.liveDemo,
-        imageUrl: body.imageUrl,
+        image: body.image, // ✅ fixed here
         tags,
       },
       { new: true }
@@ -57,6 +56,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     return NextResponse.json({ error: "Failed to update project" }, { status: 500 });
   }
 }
+
 
 // DELETE /api/projects/:id
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {

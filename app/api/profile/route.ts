@@ -7,17 +7,17 @@ export async function GET() {
   const profile = await Profile.findOne();
   return NextResponse.json(profile);
 }
-
 export async function POST(req: Request) {
   await connectDB();
   const body = await req.json();
-  let profile = await Profile.findOne();
 
-  if (profile) {
-    await Profile.updateOne({}, body);
-  } else {
-    profile = await Profile.create(body);
-  }
+  const profile = await Profile.findOneAndUpdate(
+    {},         // match any document
+    body,       // update with new data
+    { upsert: true, new: true } // create if not exists, return updated doc
+  );
+  console.log("Profile updated:", profile);
 
   return NextResponse.json(profile);
 }
+
