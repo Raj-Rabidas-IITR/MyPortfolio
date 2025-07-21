@@ -175,7 +175,7 @@ const Navbar: React.FC = () => {
                       className="text-gray-300 hover:text-white"
                       aria-label="GitHub"
                     >
-                      <Github size={24} />
+                      <FaGithub size={24} />
                     </a>
                   )}
                   {profile.linkedin && (
@@ -186,7 +186,7 @@ const Navbar: React.FC = () => {
                       className="text-gray-300 hover:text-white"
                       aria-label="LinkedIn"
                     >
-                      <Linkedin size={24} />
+                      <FaLinkedin size={24} />
                     </a>
                   )}
                 </>
