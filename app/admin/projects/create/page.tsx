@@ -29,10 +29,11 @@ export default function CreateProjectPage() {
     formData.append('file', file);
     formData.append('name', 'image');
 
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
+   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`, {
+  method: 'POST',
+  body: formData,
+});
+
 
     const data = await res.json();
     if (data.url) {
@@ -56,11 +57,12 @@ export default function CreateProjectPage() {
     e.preventDefault();
     const payload = { ...project, tags };
 
-    const res = await fetch('/api/projects', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(payload),
+});
+
 
     if (res.ok) {
       router.push('/admin/projects');

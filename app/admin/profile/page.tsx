@@ -1,5 +1,5 @@
-'use client';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+"use client";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 type ProfileType = {
   name: string;
@@ -10,20 +10,20 @@ type ProfileType = {
   linkedin: string;
 };
 
-type UploadType = 'profile' | 'resume';
+type UploadType = "profile" | "resume";
 
 export default function ProfileAdmin() {
   const [profile, setProfile] = useState<ProfileType>({
-    name: '',
-    bio: '',
-    profilePic: '',
-    resumeUrl: '',
-    github: '',
-    linkedin: '',
+    name: "",
+    bio: "",
+    profilePic: "",
+    resumeUrl: "",
+    github: "",
+    linkedin: "",
   });
 
   useEffect(() => {
-    fetch('/api/profile')
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/profile`)
       .then((res) => res.json())
       .then((data: ProfileType) => {
         if (data) setProfile(data);
@@ -32,14 +32,15 @@ export default function ProfileAdmin() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await fetch('/api/profile', {
-      method: 'POST',
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/profile`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(profile),
     });
-    alert('Profile updated!');
+
+    alert("Profile updated!");
   };
 
   const handleFileUpload = async (
@@ -50,26 +51,29 @@ export default function ProfileAdmin() {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('name', type);
+    formData.append("file", file);
+    formData.append("name", type);
 
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
+   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`, {
+  method: "POST",
+  body: formData,
+});
+
 
     const data = await res.json();
     if (data.url) {
       setProfile((prev) => ({
         ...prev,
-        [type === 'profile' ? 'profilePic' : 'resumeUrl']: data.url,
+        [type === "profile" ? "profilePic" : "resumeUrl"]: data.url,
       }));
     }
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold text-cyan-500 mb-4">Edit Profile Info</h1>
+      <h1 className="text-2xl font-bold text-cyan-500 mb-4">
+        Edit Profile Info
+      </h1>
 
       {/* Profile Picture Upload Preview */}
       {profile.profilePic && (
@@ -79,28 +83,32 @@ export default function ProfileAdmin() {
           className="w-24 h-24 rounded-full object-cover border mb-2"
         />
       )}
-      <label className="block text-white font-medium">Upload Profile Image</label>
+      <label className="block text-white font-medium">
+        Upload Profile Image
+      </label>
       <input
         type="file"
         accept="image/*"
-        onChange={(e) => handleFileUpload(e, 'profile')}
+        onChange={(e) => handleFileUpload(e, "profile")}
         className="mb-4 text-white"
       />
 
       {/* Resume Upload & Preview */}
       {profile.resumeUrl && (
         <p className="text-sm text-blue-400 mb-2">
-          Current Resume:{' '}
+          Current Resume:{" "}
           <a href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">
             View
           </a>
         </p>
       )}
-      <label className="block text-white font-medium">Upload Resume (PDF)</label>
+      <label className="block text-white font-medium">
+        Upload Resume (PDF)
+      </label>
       <input
         type="file"
         accept="application/pdf"
-        onChange={(e) => handleFileUpload(e, 'resume')}
+        onChange={(e) => handleFileUpload(e, "resume")}
         className="mb-4 text-white"
       />
 
@@ -131,7 +139,10 @@ export default function ProfileAdmin() {
           value={profile.linkedin}
           onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
         />
-        <button type="submit" className="bg-cyan-500 px-4 py-2 text-white rounded">
+        <button
+          type="submit"
+          className="bg-cyan-500 px-4 py-2 text-white rounded"
+        >
           Save Profile
         </button>
       </form>

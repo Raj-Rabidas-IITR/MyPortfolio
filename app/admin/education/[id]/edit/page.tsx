@@ -22,7 +22,8 @@ export default function EditEducation() {
   });
 
   useEffect(() => {
-    fetch(`/api/education/${id}`)
+    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/education/${id}`)
+
       .then((res) => res.json())
       .then(setEdu);
   }, [id]);
@@ -35,10 +36,11 @@ export default function EditEducation() {
     formData.append('file', file);
     formData.append('name', 'logo');
 
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
+   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`, {
+  method: 'POST',
+  body: formData,
+});
+
 
     const data = await res.json();
     if (data.url) {
@@ -48,12 +50,12 @@ export default function EditEducation() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/education/${id}`, {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(edu),
+});
 
-    const res = await fetch(`/api/education/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(edu),
-    });
 
     if (res.ok) {
       router.push('/admin/education');

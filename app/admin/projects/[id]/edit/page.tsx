@@ -18,9 +18,10 @@ export default function EditProjectPage() {
 
   useEffect(() => {
     if (id) {
-      fetch(`/api/projects/${id}`)
-        .then((res) => res.json())
-        .then((data) => setProject(data));
+     fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects/${id}`)
+  .then((res) => res.json())
+  .then((data) => setProject(data));
+
     }
   }, [id]);
 
@@ -32,10 +33,11 @@ export default function EditProjectPage() {
     formData.append('file', file);
     formData.append('name', 'project-image');
 
-    const res = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`, {
+  method: 'POST',
+  body: formData,
+});
+
 
     const data = await res.json();
     if (data.url) {
@@ -68,11 +70,12 @@ export default function EditProjectPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch(`/api/projects/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(project),
-    });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects/${id}`, {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(project),
+});
+
 
     if (res.ok) {
       router.push('/admin/projects');
