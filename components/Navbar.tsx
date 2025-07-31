@@ -43,6 +43,7 @@ const Navbar: React.FC = () => {
       try {
         const response = await fetch('/api/profile');
         if (!response.ok) throw new Error('Failed to fetch profile');
+        
         const data: ProfileData = await response.json();
         setProfile(data);
       } catch (err) {

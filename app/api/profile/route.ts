@@ -7,6 +7,7 @@ export async function GET() {
   const profile = await Profile.findOne();
   return NextResponse.json(profile);
 }
+
 export async function POST(req: Request) {
   await connectDB();
   const body = await req.json();

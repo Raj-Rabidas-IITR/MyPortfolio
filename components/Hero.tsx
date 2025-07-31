@@ -5,16 +5,31 @@ import Tilt from "react-parallax-tilt";
 import type { Profile } from "@/types";
 import Image from "next/image";
 
+import Loading from "@/app/loading";
 export default function Hero() {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch("/api/profile")
-      .then((res) => res.json())
-      .then((data: Profile) => setProfile(data));
-  }, []);
+useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      const res = await fetch("/api/profile");
+      const data: Profile = await res.json();
+      setProfile(data);
+    } catch (error) {
+      console.error("Error loading profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (!profile) return null;
+  fetchProfile();
+}, []);
+
+if (!profile) return null;
+
+  if (loading) return <Loading />;
+
 
   return (
     <section
