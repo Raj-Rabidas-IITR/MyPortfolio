@@ -6,6 +6,7 @@ import type { Profile } from "@/types";
 import Image from "next/image";
 
 import Loading from "@/app/loading";
+
 export default function Hero() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -26,9 +27,9 @@ useEffect(() => {
   fetchProfile();
 }, []);
 
+if (loading) return <Loading />;
 if (!profile) return null;
 
-  if (loading) return <Loading />;
 
 
   return (
