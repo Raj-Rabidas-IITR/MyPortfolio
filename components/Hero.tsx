@@ -1,44 +1,18 @@
 "use client";
-import { useEffect, useState } from "react";
+
 import { Typewriter } from "react-simple-typewriter";
 import Tilt from "react-parallax-tilt";
-import type { Profile } from "@/types";
 import Image from "next/image";
+import type { Profile } from "@/types";
 
-import Loading from "@/app/loading";
-
-export default function Hero() {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-
-useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-      const res = await fetch("/api/profile");
-      const data: Profile = await res.json();
-      setProfile(data);
-    } catch (error) {
-      console.error("Error loading profile:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchProfile();
-}, []);
-
-if (loading) return <Loading />;
-if (!profile) return null;
-
-
-
+export default function Hero({ profile }: { profile: Profile }) {
   return (
     <section
       className="py-24 px-[7vw] md:px-[7vw] lg:px-[15vw] font-sans mt-16 md:mt-24 lg:mt-32"
       id="about"
     >
       <div className="flex flex-col-reverse md:flex-row justify-between items-center">
-        {/* Left Side */}
+        {/* Left */}
         <div className="md:w-1/2 text-center md:text-left mt-8 md:mt-0">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 leading-tight">
             Hi, I am
@@ -84,7 +58,7 @@ if (!profile) return null;
           )}
         </div>
 
-        {/* Right Side */}
+        {/* Right */}
         <div className="md:w-1/2 flex justify-center md:justify-end">
           <Tilt
             className="w-48 h-48 sm:w-64 sm:h-64 md:w-[30rem] md:h-[30rem] border-4 border-cyan-400 rounded-full"
@@ -98,8 +72,8 @@ if (!profile) return null;
             <Image
               src={profile.profilePic}
               alt={profile.name}
-              width={200} // or your preferred width
-              height={200} // or your preferred height
+              width={200}
+              height={200}
               className="rounded-full object-cover w-full h-full drop-shadow-[0_10px_20px_rgba(130,69,236,0.5)]"
             />
           </Tilt>
