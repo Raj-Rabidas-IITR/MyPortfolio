@@ -12,17 +12,19 @@ const Contact = () => {
     e.preventDefault();
 
     const formData = new FormData(form.current!);
+    const subject = formData.get('subject') as string;
+    const messageText = formData.get('message') as string;
+    
     const data = {
-      user_email: formData.get('user_email'),
-      user_name: formData.get('user_name'),
-      subject: formData.get('subject'),
-      message: formData.get('message'),
+      name: formData.get('user_name') as string,
+      email: formData.get('user_email') as string,
+      message: `Subject: ${subject}\n\n${messageText}`,
     };
 
     try {
       setIsSending(true);
 
-      const res = await fetch('/api/send-email', {
+      const res = await fetch('/api/contacts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -30,15 +32,21 @@ const Contact = () => {
 
       const result = await res.json();
 
-      if (result.success) {
-        toast.success('Message sent successfully!', { position: 'top-right', theme: 'dark' });
+      if (res.ok) {
+        toast.success('Message sent successfully! We will get back to you soon.', { 
+          position: 'top-right', 
+          theme: 'dark' 
+        });
         form.current?.reset();
       } else {
         throw new Error(result.error || 'Something went wrong');
       }
     } catch (err) {
       console.error(err);
-      toast.error('Failed to send message. Please try again.', { position: 'top-right', theme: 'dark' });
+      toast.error('Failed to send message. Please try again.', { 
+        position: 'top-right', 
+        theme: 'dark' 
+      });
     } finally {
       setIsSending(false);
     }

@@ -11,6 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Mail,
+  Download,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -21,6 +23,8 @@ const links = [
   { href: "/admin/skills", label: "Skills", icon: Brain },
   { href: "/admin/education", label: "Education", icon: GraduationCap },
   { href: "/admin/experience", label: "Experience", icon: Briefcase },
+  { href: "/admin/contacts", label: "Contacts", icon: Mail },
+  { href: "/admin/cv-access", label: "CV Access", icon: Download },
 ];
 
 interface SidebarProps {

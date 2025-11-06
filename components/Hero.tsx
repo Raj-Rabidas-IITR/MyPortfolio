@@ -1,45 +1,47 @@
 "use client";
 
+import { useState } from "react";
 import { Typewriter } from "react-simple-typewriter";
 import Tilt from "react-parallax-tilt";
 import Image from "next/image";
 import type { Profile } from "@/types";
+import CVDownloadModal from "./CVDownloadModal";
 
-export default function Hero({ profile }: { profile: Profile }) {
+export default function Hero({ profile }: { readonly profile: Profile }) {
+  const [isCVModalOpen, setIsCVModalOpen] = useState(false);
+
   return (
-    <section
-      className="py-24 px-[7vw] md:px-[7vw] lg:px-[15vw] font-sans mt-16 md:mt-24 lg:mt-32"
-      id="about"
-    >
-      <div className="flex flex-col-reverse md:flex-row justify-between items-center">
-        {/* Left */}
-        <div className="md:w-1/2 text-center md:text-left mt-8 md:mt-0">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 leading-tight">
-            Hi, I am
-          </h1>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
-            {profile.name}
-          </h2>
-          <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 text-cyan-400 leading-tight">
-            <span className="text-white">I am a </span>
-            <Typewriter
-              words={["Coder", "Web Developer", "UI/UX Designer"]}
-              loop={true}
-              cursor
-              cursorStyle="_"
-              typeSpeed={100}
-              deleteSpeed={50}
-              delaySpeed={2000}
-            />
-          </h3>
-          <p className="text-base sm:text-lg md:text-lg text-gray-400 mb-10 mt-4 leading-relaxed">
-            {profile.bio}
-          </p>
-          {profile.resumeUrl && (
-            <a
-              href={profile.resumeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+    <>
+      <section
+        className="py-24 px-[7vw] md:px-[7vw] lg:px-[15vw] font-sans mt-16 md:mt-24 lg:mt-32"
+        id="about"
+      >
+        <div className="flex flex-col-reverse md:flex-row justify-between items-center">
+          {/* Left */}
+          <div className="md:w-1/2 text-center md:text-left mt-8 md:mt-0">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 leading-tight">
+              Hi, I am
+            </h1>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
+              {profile.name}
+            </h2>
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-4 text-cyan-400 leading-tight">
+              <span className="text-white">I am a </span>
+              <Typewriter
+                words={["Coder", "Web Developer", "UI/UX Designer"]}
+                loop={true}
+                cursor
+                cursorStyle="_"
+                typeSpeed={100}
+                deleteSpeed={50}
+                delaySpeed={2000}
+              />
+            </h3>
+            <p className="text-base sm:text-lg md:text-lg text-gray-400 mb-10 mt-4 leading-relaxed">
+              {profile.bio}
+            </p>
+            <button
+              onClick={() => setIsCVModalOpen(true)}
               className="inline-block text-white py-3 px-8 rounded-full mt-5 text-lg font-bold transition duration-300 transform hover:scale-105"
               style={{
                 backdropFilter: "blur(10px)",
@@ -54,31 +56,37 @@ export default function Hero({ profile }: { profile: Profile }) {
               }}
             >
               DOWNLOAD CV
-            </a>
-          )}
-        </div>
+            </button>
+          </div>
 
-        {/* Right */}
-        <div className="md:w-1/2 flex justify-center md:justify-end">
-          <Tilt
-            className="w-48 h-48 sm:w-64 sm:h-64 md:w-[30rem] md:h-[30rem] border-4 border-cyan-400 rounded-full"
-            tiltMaxAngleX={20}
-            tiltMaxAngleY={20}
-            perspective={1000}
-            scale={1.05}
-            transitionSpeed={1000}
-            gyroscope={true}
-          >
-            <Image
-              src={profile.profilePic}
-              alt={profile.name}
-              width={200}
-              height={200}
-              className="rounded-full object-cover w-full h-full drop-shadow-[0_10px_20px_rgba(130,69,236,0.5)]"
-            />
-          </Tilt>
+          {/* Right */}
+          <div className="md:w-1/2 flex justify-center md:justify-end">
+            <Tilt
+              className="w-48 h-48 sm:w-64 sm:h-64 md:w-[30rem] md:h-[30rem] border-4 border-cyan-400 rounded-full"
+              tiltMaxAngleX={20}
+              tiltMaxAngleY={20}
+              perspective={1000}
+              scale={1.05}
+              transitionSpeed={1000}
+              gyroscope={true}
+            >
+              <Image
+                src={profile.profilePic}
+                alt={profile.name}
+                width={200}
+                height={200}
+                className="rounded-full object-cover w-full h-full drop-shadow-[0_10px_20px_rgba(130,69,236,0.5)]"
+              />
+            </Tilt>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* CV Download Modal */}
+      <CVDownloadModal
+        isOpen={isCVModalOpen}
+        onClose={() => setIsCVModalOpen(false)}
+      />
+    </>
   );
 }
