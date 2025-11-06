@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { ArrowLeft } from 'lucide-react';
 
 export default function EditProjectPage() {
   const router = useRouter();
@@ -18,10 +20,9 @@ export default function EditProjectPage() {
 
   useEffect(() => {
     if (id) {
-     fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects/${id}`)
-  .then((res) => res.json())
-  .then((data) => setProject(data));
-
+      fetch(`/api/projects/${id}`)
+        .then((res) => res.json())
+        .then((data) => setProject(data));
     }
   }, [id]);
 
@@ -33,15 +34,21 @@ export default function EditProjectPage() {
     formData.append('file', file);
     formData.append('name', 'project-image');
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`, {
-  method: 'POST',
-  body: formData,
-});
-
-
-    const data = await res.json();
-    if (data.url) {
-      setProject((prev) => ({ ...prev, image: data.url }));
+    try {
+      const res = await fetch(`/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setProject((prev) => ({ ...prev, image: data.url }));
+        toast.success('Image uploaded');
+      } else {
+        toast.error(data?.error || 'Upload failed');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Upload error');
     }
   };
 
@@ -70,23 +77,38 @@ export default function EditProjectPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects/${id}`, {
-  method: 'PUT',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(project),
-});
-
+  try {
+    const res = await fetch(`/api/projects/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(project),
+    });
 
     if (res.ok) {
+      toast.success('Project updated');
       router.push('/admin/projects');
     } else {
-      alert('Failed to update project');
+      const data = await res.json();
+      toast.error(data?.error || 'Failed to update project');
     }
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to update project');
+  }
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-gray-900 rounded">
-      <h1 className="text-2xl font-bold text-cyan-400 mb-4">Edit Project</h1>
+      <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 px-3 py-2 bg-gray-800 text-cyan-400 rounded hover:bg-gray-700 transition"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+        <h1 className="text-2xl font-bold text-cyan-400">Edit Project</h1>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
 

@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
-import { mkdir, writeFile } from "fs/promises";
-import { join } from "path";
-import formidable from "formidable";
-import { IncomingForm } from "formidable";
-import { Readable } from "stream";
+import { mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 
 // Disable Next.js default body parsing
 export const config = {
@@ -12,37 +9,8 @@ export const config = {
   },
 };
 
-// Custom parser function
-async function parseForm(req: Request): Promise<{ fields: any; files: any }> {
-  const form = new IncomingForm({
-    keepExtensions: true,
-    maxFileSize: 5 * 1024 * 1024, // 5MB
-    uploadDir: "/tmp",
-  });
-
-  return new Promise((resolve, reject) => {
-    form.parse(req as any, (err, fields, files) => {
-      if (err) reject(err);
-      else resolve({ fields, files });
-    });
-  });
-}
-
-// Convert Request -> Readable for formidable
-async function toReadableStream(req: Request): Promise<Readable> {
-  const reader = req.body?.getReader();
-  const stream = new Readable({ read() {} });
-
-  async function pump() {
-    const { done, value } = await reader!.read();
-    if (done) return stream.push(null);
-    stream.push(value);
-    await pump();
-  }
-
-  pump();
-  return stream;
-}
+// Note: this route uses the simpler Request.formData() approach in most handlers.
+// The formidable-based parser was removed because it was unused and caused lint errors.
 
 export async function POST(req: Request) {
   const uploadDir = join(process.cwd(), "/public/uploads");

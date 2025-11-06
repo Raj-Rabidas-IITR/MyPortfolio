@@ -2,6 +2,8 @@
 import { useEffect, useState, FormEvent, ChangeEvent } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
+import { ArrowLeft } from 'lucide-react';
+
 type ExperienceType = {
   role: string;
   company: string;
@@ -85,7 +87,16 @@ export default function EditExperience() {
 
   return (
     <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-xl font-bold text-cyan-500 mb-4">Edit Experience</h1>
+      <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 px-3 py-2 bg-gray-800 text-cyan-400 rounded hover:bg-gray-700 transition"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+        <h1 className="text-xl font-bold text-cyan-500">Edit Experience</h1>
+      </div>
 
      {exp.logo && (
   <div className="w-20 h-20 relative mb-4">

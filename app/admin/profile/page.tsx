@@ -1,5 +1,6 @@
 "use client";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { toast } from 'react-toastify';
 
 type ProfileType = {
   name: string;
@@ -23,7 +24,7 @@ export default function ProfileAdmin() {
   });
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/profile`)
+    fetch(`/api/profile`)
       .then((res) => res.json())
       .then((data: ProfileType) => {
         if (data) setProfile(data);
@@ -32,15 +33,25 @@ export default function ProfileAdmin() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/profile`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(profile),
-    });
+    try {
+      const res = await fetch(`/api/profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profile),
+      });
 
-    alert("Profile updated!");
+      if (res.ok) {
+        toast.success('Profile updated');
+      } else {
+        const data = await res.json();
+        toast.error(data?.error || 'Failed to update profile');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to update profile');
+    }
   };
 
   const handleFileUpload = async (
@@ -54,19 +65,25 @@ export default function ProfileAdmin() {
     formData.append("file", file);
     formData.append("name", type);
 
-   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`, {
-  method: "POST",
-  body: formData,
-});
-
-
+   try {
+    const res = await fetch(`/api/upload`, {
+      method: "POST",
+      body: formData,
+    });
     const data = await res.json();
-    if (data.url) {
+    if (res.ok && data.url) {
       setProfile((prev) => ({
         ...prev,
         [type === "profile" ? "profilePic" : "resumeUrl"]: data.url,
       }));
+      toast.success('Uploaded');
+    } else {
+      toast.error(data?.error || 'Upload failed');
     }
+   } catch (err) {
+    console.error(err);
+    toast.error('Upload error');
+   }
   };
 
   return (

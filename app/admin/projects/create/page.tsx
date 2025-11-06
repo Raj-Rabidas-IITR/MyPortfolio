@@ -1,6 +1,8 @@
 'use client';
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { ArrowLeft } from 'lucide-react';
 
 export default function CreateProjectPage() {
   const router = useRouter();
@@ -29,15 +31,21 @@ export default function CreateProjectPage() {
     formData.append('file', file);
     formData.append('name', 'image');
 
-   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`, {
-  method: 'POST',
-  body: formData,
-});
-
-
-    const data = await res.json();
-    if (data.url) {
-      setProject((prev) => ({ ...prev, image: data.url }));
+    try {
+      const res = await fetch(`/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setProject((prev) => ({ ...prev, image: data.url }));
+        toast.success('Image uploaded');
+      } else {
+        toast.error(data?.error || 'Upload failed');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Upload error');
     }
   };
 
@@ -57,23 +65,38 @@ export default function CreateProjectPage() {
     e.preventDefault();
     const payload = { ...project, tags };
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(payload),
-});
+    try {
+      const res = await fetch(`/api/projects`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-
-    if (res.ok) {
-      router.push('/admin/projects');
-    } else {
-      alert('Failed to create project');
+      if (res.ok) {
+        toast.success('Project created');
+        router.push('/admin/projects');
+      } else {
+        const data = await res.json();
+        toast.error(data?.error || 'Failed to create project');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to create project');
     }
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-gray-900 rounded">
-      <h1 className="text-2xl font-bold text-cyan-400 mb-4">Add New Project</h1>
+      <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 px-3 py-2 bg-gray-800 text-cyan-400 rounded hover:bg-gray-700 transition"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+        <h1 className="text-2xl font-bold text-cyan-400">Add New Project</h1>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           name="title"

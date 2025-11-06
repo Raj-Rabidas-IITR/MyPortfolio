@@ -29,7 +29,7 @@ export default function Skills() {
         <h2 className="text-3xl sm:text-4xl font-bold text-white">SKILLS</h2>
         <div className="w-10 h-1 bg-cyan-500 mx-auto mt-2"></div>
         <p className="text-gray-400 mt-4 text-base sm:text-lg font-medium max-w-3xl mx-auto">
-          I'm a passionate and dedicated developer with hands-on experience in front-end technologies like HTML, CSS, JavaScript, and React. I enjoy crafting clean, responsive user interfaces and continuously learning to keep up with modern web development trends.
+          I am a passionate and dedicated developer with hands-on experience in front-end technologies like HTML, CSS, JavaScript, and React. I enjoy crafting clean, responsive user interfaces and continuously learning to keep up with modern web development trends.
         </p>
       </div>
 

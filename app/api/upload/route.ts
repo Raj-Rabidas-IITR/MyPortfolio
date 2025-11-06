@@ -29,18 +29,26 @@ export async function POST(req: Request) {
   const buffer = Buffer.from(bytes);
   const stream = Readable.from(buffer);
 
+  // Use a unique public_id to avoid accidental overwrite and caching issues
+  const uniquePublicId = `${name}-${Date.now()}`;
+
   const uploadPromise = (): Promise<UploadApiResponse> =>
     new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: "uploads",
-          public_id: name,
-          overwrite: true,
+          public_id: uniquePublicId,
+          overwrite: false,
           resource_type: "auto",
         },
         (error, result) => {
-          if (error) reject(error);
-          else if (result) resolve(result);
+          if (error) {
+            const e = error as unknown;
+            const msg = typeof (e as { message?: unknown }).message === 'string'
+              ? (e as { message?: string }).message
+              : String(e);
+            reject(new Error(msg));
+          } else if (result) resolve(result);
           else reject(new Error("Unknown Cloudinary error"));
         }
       );

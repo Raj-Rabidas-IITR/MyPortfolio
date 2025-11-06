@@ -1,10 +1,10 @@
-'use client';
+"use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function CreateProject() {
   const router = useRouter();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{ title: string; description: string; tags: string; github: string; liveDemo: string; imageUrl: string }>({
     title: '',
     description: '',
     tags: '',
@@ -13,7 +13,7 @@ export default function CreateProject() {
     imageUrl: '',
   });
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const tagsArr = form.tags.split(',').map(t => t.trim());
     await fetch('/api/projects', {
@@ -27,13 +27,13 @@ export default function CreateProject() {
     <div className="p-6 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4 text-cyan-500">Add New Project</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {['title', 'description', 'tags', 'github', 'liveDemo', 'imageUrl'].map(key => (
+        {( ['title', 'description', 'tags', 'github', 'liveDemo', 'imageUrl'] as const ).map((key) => (
           <input
             key={key}
             required
             className="w-full p-2 rounded bg-gray-800 text-white"
             placeholder={key}
-            value={(form as any)[key]}
+            value={form[key]}
             onChange={e => setForm({ ...form, [key]: e.target.value })}
           />
         ))}

@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { ArrowLeft } from 'lucide-react';
 
 interface Education {
   board: string;
@@ -22,8 +24,7 @@ export default function EditEducation() {
   });
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/education/${id}`)
-
+    fetch(`/api/education/${id}`)
       .then((res) => res.json())
       .then(setEdu);
   }, [id]);
@@ -36,37 +37,58 @@ export default function EditEducation() {
     formData.append('file', file);
     formData.append('name', 'logo');
 
-   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upload`, {
-  method: 'POST',
-  body: formData,
-});
-
-
-    const data = await res.json();
-    if (data.url) {
-      setEdu((prev) => ({ ...prev, logo: data.url }));
+    try {
+      const res = await fetch(`/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setEdu((prev) => ({ ...prev, logo: data.url }));
+        toast.success('Logo uploaded');
+      } else {
+        toast.error(data?.error || 'Upload failed');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Upload error');
     }
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/education/${id}`, {
-  method: 'PUT',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(edu),
-});
+    try {
+      const res = await fetch(`/api/education/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(edu),
+      });
 
-
-    if (res.ok) {
-      router.push('/admin/education');
-    } else {
-      alert('Failed to update');
+      if (res.ok) {
+        toast.success('Education updated');
+        router.push('/admin/education');
+      } else {
+        const data = await res.json();
+        toast.error(data?.error || 'Failed to update');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to update');
     }
   };
 
   return (
     <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-xl font-bold text-cyan-500 mb-4">Edit Education</h1>
+      <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 px-3 py-2 bg-gray-800 text-cyan-400 rounded hover:bg-gray-700 transition"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+        <h1 className="text-xl font-bold text-cyan-500">Edit Education</h1>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         {(['board', 'school', 'grade', 'year'] as const).map((field) => (
           <input
