@@ -6,6 +6,52 @@ body {
   @apply bg-gray-900 text-white;
   font-family: 'Inter', sans-serif;
 }
+
+.personal-shell {
+  --personal-bg: #171b24;
+  --personal-bg-soft: #222836;
+  --personal-surface: rgba(27, 31, 42, 0.9);
+  --personal-card: rgba(37, 42, 56, 0.9);
+  --personal-card-muted: rgba(47, 54, 71, 0.82);
+  --personal-text: #f4e6d4;
+  --personal-muted: #d4c0a8;
+  --personal-border: rgba(245, 164, 94, 0.24);
+  --personal-border-muted: rgba(245, 164, 94, 0.16);
+  --personal-accent: #f3a15a;
+  --personal-accent-muted: rgba(243, 161, 90, 0.18);
+  --personal-accent-text: #ffe2c2;
+  --personal-accent-foreground: #2c1a0b;
+  --personal-shadow: rgba(14, 16, 24, 0.42);
+  background:
+    radial-gradient(circle at 8% 8%, rgba(243, 161, 90, 0.16), transparent 36%),
+    radial-gradient(circle at 92% 18%, rgba(255, 214, 178, 0.1), transparent 42%),
+    linear-gradient(180deg, var(--personal-bg), var(--personal-bg-soft));
+  color: var(--personal-text);
+}
+
+@media (prefers-color-scheme: light) {
+  .personal-shell {
+    --personal-bg: #f4efe8;
+    --personal-bg-soft: #ecdfd0;
+    --personal-surface: rgba(255, 252, 248, 0.94);
+    --personal-card: rgba(255, 252, 248, 0.96);
+    --personal-card-muted: rgba(247, 235, 220, 0.84);
+    --personal-text: #433024;
+    --personal-muted: #87684e;
+    --personal-border: rgba(193, 136, 86, 0.26);
+    --personal-border-muted: rgba(193, 136, 86, 0.16);
+    --personal-accent: #d7833f;
+    --personal-accent-muted: rgba(215, 131, 63, 0.14);
+    --personal-accent-text: #6b3e1a;
+    --personal-accent-foreground: #fff7ef;
+    --personal-shadow: rgba(126, 96, 69, 0.18);
+    background:
+      radial-gradient(circle at 8% 8%, rgba(216, 133, 67, 0.14), transparent 40%),
+      radial-gradient(circle at 92% 16%, rgba(154, 130, 106, 0.1), transparent 44%),
+      linear-gradient(180deg, var(--personal-bg), var(--personal-bg-soft));
+  }
+}
+
 html{
     scroll-behavior: smooth; 
 }
